@@ -1,16 +1,17 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| This file is where you may define all of the routes that are handled
-| by your application. Just tell Laravel the URIs it should respond
-| to using a Closure or controller method. Build something great!
-|
-*/
+/** @var \Illuminate\Routing\Router $router */
 
-Route::get('/', function () {
-    return view('welcome');
+// Public facing page
+$router->get('/', 'HomeController@public')->middleware('guest');
+
+// Authentication, default routes by Laravel.
+Auth::routes();
+
+// Authenticated routes.
+$router->group(['middleware' => 'auth'], function(\Illuminate\Routing\Router $router) {
+    $router->get('home', 'HomeController@home');
+    $router->get('my-list', 'BooksController@index');
+    $router->get('account', 'AccountController@account');
+    $router->resource('book', 'BooksController', ['except' => ['index']]);
 });

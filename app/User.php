@@ -1,14 +1,21 @@
 <?php
-
 namespace App;
 
-use Illuminate\Notifications\Notifiable;
+use Carbon\Carbon;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+/**
+ * Class User
+ *
+ * @package App
+ * @property int    id
+ * @property string username
+ * @property string password
+ * @property Carbon created_at
+ * @property Carbon updated_at
+ */
 class User extends Authenticatable
 {
-    use Notifiable;
-
     /**
      * The attributes that are mass assignable.
      *
@@ -26,4 +33,19 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    /**
+     * Automatically hash the password for the users.
+     *
+     * @param string $value
+     */
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = bcrypt($value);
+    }
+
+    public function books()
+    {
+        return $this->hasMany(Book::class);
+    }
 }

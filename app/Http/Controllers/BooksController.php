@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Book;
 use Illuminate\Http\Request;
 
 class BooksController extends Controller
@@ -13,7 +14,11 @@ class BooksController extends Controller
      */
     public function index()
     {
-        //
+        // TODO: Filter by current user.
+
+        return view('book.index', [
+            'books' => Book::all()
+        ]);
     }
 
     /**
@@ -34,7 +39,17 @@ class BooksController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, ['name' => 'required|string|min:1']);
+
+        $book = new Book();
+        $book->name = trim($request->input('name'));
+        $book->user_id = $request->user()->id;
+
+        if ($book->save()) {
+            return redirect()->route('book.edit', $book->id);
+        }
+
+        return redirect()->back()->withInput()->withErrors(['name' => 'Unable to create book.']);
     }
 
     /**
@@ -56,7 +71,7 @@ class BooksController extends Controller
      */
     public function edit($id)
     {
-        //
+        return view('book.edit');
     }
 
     /**
